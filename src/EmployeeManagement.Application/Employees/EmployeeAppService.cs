@@ -10,7 +10,6 @@ using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
 using EmployeeManagement.Departments;
-using Volo.Abp.ObjectMapping;
 
 namespace EmployeeManagement.Employees;
 
@@ -38,18 +37,10 @@ public class EmployeeAppService :
         UpdatePolicyName = EmployeeManagementPermissions.Employees.Edit;
         DeletePolicyName = EmployeeManagementPermissions.Employees.Delete;
     }
-
-    //public IRepository<Employee, Guid> Get_repository()
-    //{
-    //    return repository;
-    //}
-
-    
-
-
+     
     public override async Task<EmployeeDto> GetAsync(Guid id)
     {
-        //Get the IQueryable<Book> from the repository
+        //Get the IQueryable<Employee> from the repository
         var queryable = await Repository.GetQueryableAsync();
 
         //Prepare a query to join employee and authors
@@ -58,7 +49,7 @@ public class EmployeeAppService :
                     where employee.Id == id
                     select new { employee, department };
 
-        //Execute the query and get the book with author
+        //Execute the query and get the employee with department
         var queryResult = await AsyncExecuter.FirstOrDefaultAsync(query);
         if (queryResult == null)
         {
@@ -72,10 +63,10 @@ public class EmployeeAppService :
 
     public override async Task<PagedResultDto<EmployeeDto>> GetListAsync(PagedAndSortedResultRequestDto input)
     {
-        //Get the IQueryable<Book> from the repository
+        //Get the IQueryable<Employee> from the repository
         var queryable = await Repository.GetQueryableAsync();
 
-        //Prepare a query to join books and authors
+        //Prepare a query to join employees and departments
         var query = from employee in queryable
                     join department in await _departmentRepository.GetQueryableAsync() on employee.DepartmentId equals department.Id
                     select new { employee, department };
@@ -89,7 +80,7 @@ public class EmployeeAppService :
         //Execute the query and get a list
         var queryResult = await AsyncExecuter.ToListAsync(query);
 
-        //Convert the query result to a list of BookDto objects
+        //Convert the query result to a list of EmployeeDto objects
         var employeeDtos = queryResult.Select(x =>
         {
             var employeeDto = ObjectMapper.Map<Employee, EmployeeDto>(x.employee);
