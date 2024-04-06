@@ -3,7 +3,6 @@ using Microsoft.Extensions.Options;
 using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp.Authorization;
-using Volo.Abp.DependencyInjection;
 using Volo.Abp.Identity;
 using Volo.Abp.Users;
 
@@ -31,7 +30,7 @@ public class UserService : IdentityUserAppService
     public override async Task<IdentityUserDto> CreateAsync(IdentityUserCreateDto input)
     {
         var isAdmin = _currentUser.IsInRole("admin");
-        var userRole = input.RoleNames.Any(x => x != "HR");
+        var userRole = input.RoleNames.Any(x => x == "HR");
         if (isAdmin == true && userRole == false)
         {
 
